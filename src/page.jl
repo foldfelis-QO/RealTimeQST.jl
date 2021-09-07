@@ -1,9 +1,14 @@
+using QuantumStateBase
+using SqState
 using Dash
 using DashHtmlComponents
 using DashCoreComponents
 using PlotlyJS
 
 export start_real_time_system
+
+const wf = QuantumStateBase.WignerFunction(LinRange(-3, 3, 101), LinRange(-3, 3, 101), dim=dim),
+const m = SqState.get_model("model")
 
 function banner()
     return html_div([
@@ -24,32 +29,9 @@ function ctl()
     ])
 end
 
-const color_config = [:colorscale=>"twilight", :cmid=>0, :zmid=>0]
-
-function wigner_surface(data::Vector, width::Integer, height::Integer)
-    data = PlotlyJS.surface(z=data; color_config...)
-    layout = Layout(title="Wigner Function", width=width, height=height)
-
-    return plot(data, layout)
-end
-
-function wigner_heatmap(data::Vector, width::Integer, height::Integer)
-    data = PlotlyJS.heatmap(z=data; color_config...)
-    layout = Layout(title="Wigner Function", width=width, height=height)
-
-    return plot(data, layout)
-end
-
-function density_matrix(data::Vector, width::Integer, height::Integer)
-    data = PlotlyJS.heatmap(z=data; color_config...)
-    layout = Layout(title="Density Matrix (Real Part)", width=width, height=height)
-
-    return plot(data, layout)
-end
-
 function get_plots(filename::String, width::Integer, height::Integer)
     isempty(filename) && (return []) # TODO: handle non-exist file
-    ρ, w = infer(filename, fix_θ=false) # TODO: implement infer
+    ρ, w = get_𝛒_and_𝐰(filename, fix_θ=false, wf=wf, m=m)
 
     return [
         dcc_graph(figure=wigner_surface(w, width, height)),
@@ -73,7 +55,7 @@ function gen_app(; data_path=joinpath(SqState.data_path(), "Flow"), width=500, h
     app.layout = html_div([
         banner(),
         ctl(),
-        plots(files[1], width, height),
+        plots(joinpath(data_path, files[1]), width, height),
     ])
 
     callback!(
