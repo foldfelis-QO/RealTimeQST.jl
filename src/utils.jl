@@ -22,8 +22,8 @@ reshape_inferred_data(data::Matrix) = [data[:, i] for i in 1:size(data, 2)]
 
 function get_𝛒_and_𝐰(
     data_name::String;
-    n_sample=10, fix_θ=true, dim=100,
-    wf=WignerFunction(LinRange(-3, 3, 101), LinRange(-3, 3, 101), dim=dim),
+    n_sample=10, fix_θ=true,
+    wf=WignerFunction(LinRange(-3, 3, 101), LinRange(-3, 3, 101), dim=70),
     m=get_model("model")
 )
     data = get_data(data_name)
@@ -32,13 +32,15 @@ function get_𝛒_and_𝐰(
     for _ in 1:n_sample
         argv += SqState.infer(m, sample(data, 4096))
     end
+    argv ./= n_sample
+
+    argv[4:6] ./= sum(argv[4:6])
     r, θ, n̄, c1, c2, c3 = argv
     θ = fix_θ ? zero(typeof(θ)) : θ
 
-    state = construct_state(r, θ, n̄, c1, c2, c3, dim)
-    w = wf(state)
+    state = SqState.construct_state(r, θ, n̄, c1, c2, c3, wf.m_dim)
 
-    return reshape_inferred_data(real.(𝛒(state))), reshape_inferred_data(w.𝐰_surface)
+    return reshape_inferred_data(real.(𝛒(state))), reshape_inferred_data(wf(state).𝐰_surface)
 end
 
 #############

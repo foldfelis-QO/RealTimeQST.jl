@@ -7,8 +7,9 @@ using PlotlyJS
 
 export start_real_time_system
 
-const wf = QuantumStateBase.WignerFunction(LinRange(-3, 3, 101), LinRange(-3, 3, 101), dim=dim),
-const m = SqState.get_model("model")
+const DIM = 70
+const WF = WignerFunction(LinRange(-3, 3, 101), LinRange(-3, 3, 101), dim=DIM)
+const M = SqState.get_model("model")
 
 function banner()
     return html_div([
@@ -30,8 +31,8 @@ function ctl()
 end
 
 function get_plots(filename::String, width::Integer, height::Integer)
-    isempty(filename) && (return []) # TODO: handle non-exist file
-    ρ, w = get_𝛒_and_𝐰(filename, fix_θ=false, wf=wf, m=m)
+    isempty(filename) && (return [])
+    ρ, w = get_𝛒_and_𝐰(filename, fix_θ=false, wf=WF, m=M)
 
     return [
         dcc_graph(figure=wigner_surface(w, width, height)),
@@ -48,7 +49,7 @@ function plots(init_filename::String, width::Integer, height::Integer)
     )
 end
 
-function gen_app(; data_path=joinpath(SqState.data_path(), "Flow"), width=500, height=500)
+function gen_app(; data_path=datadep"QSTDemo", width=500, height=500)
     files = readdir(data_path)
 
     app = dash(external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"])
@@ -64,7 +65,7 @@ function gen_app(; data_path=joinpath(SqState.data_path(), "Flow"), width=500, h
         Input("snap", "n_clicks"),
     ) do n
 
-        return get_plots(files[(n-1) % length(files) + 1], width, height)
+        return get_plots(joinpath(data_path, files[(n-1) % length(files) + 1]), width, height)
     end
 
     callback!(
