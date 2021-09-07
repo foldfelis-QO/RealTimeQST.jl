@@ -1,5 +1,3 @@
 module RealTimeQST
-
-# Write your package code here.
-
+    include("page.jl")
 end
