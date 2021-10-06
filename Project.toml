@@ -17,7 +17,7 @@ SqState = "8d120385-201d-43c1-a82b-e15c39505f50"
 [compat]
 Dash = "0.1"
 DashCoreComponents = "1.17"
-DashHtmlComponents = "1.1"
+DashHtmlComponents = "1.1, 2"
 DataDeps = "0.7"
 Fetch = "0.1"
 MAT = "0.10"
