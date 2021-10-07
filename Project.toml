@@ -15,7 +15,7 @@ QuantumStateBase = "73ce9c4f-35d1-4161-b9e6-26915895bfed"
 SqState = "8d120385-201d-43c1-a82b-e15c39505f50"
 
 [compat]
-Dash = "0.1"
+Dash = "0.1, 1"
 DashCoreComponents = "1.17"
 DashHtmlComponents = "1.1"
 DataDeps = "0.7"
